@@ -1,74 +1,91 @@
 /* =============================================================
+   DUNLEVON � app.js
+   All interactive behaviour for the corporate website.
+
    VIDEO CONFIGURATION
    ---------------------------------------------------------------
-   When you have your .mp4 demo files ready, add the paths here.
-   Set `src` to the relative path of your video file.
-   Set `placeholder: true` to keep showing the animated box instead.
+   When your demo .mp4 is ready, set placeholder to false and
+   provide the relative path in src.
 
    Example:
-     src: 'videos/lane-master-demo.mp4'
+     src:         'videos/perception-demo.mp4',
      placeholder: false
    ============================================================= */
 const VIDEOS = {
   visionpilot: {
     id:          'visionpilot',
-    src:         '',          // e.g. 'videos/visionpilot-demo.mp4'
+    src:         '',          // e.g. 'videos/perception-demo.mp4'
     placeholder: true,
-    label:       'VisionPilot™ Demo',
-  },
-  lanemaster: {
-    id:          'lanemaster',
-    src:         '',          // e.g. 'videos/lane-master-demo.mp4'
-    placeholder: true,
-    label:       'Lane-Master™ Demo',
-  },
-  dynamiccruise: {
-    id:          'dynamiccruise',
-    src:         '',          // e.g. 'videos/dynamic-cruise-demo.mp4'
-    placeholder: true,
-    label:       'Dynamic-Cruise™ Demo',
-  },
-  shieldaeb: {
-    id:          'shieldaeb',
-    src:         '',          // e.g. 'videos/shield-aeb-demo.mp4'
-    placeholder: true,
-    label:       'Shield-AEB™ Demo',
+    label:       'Perception Engine Demo � 60FPS',
   },
 };
 
 /* =============================================================
    VIDEO LOADER
-   Reads the VIDEOS config and, for any entry with placeholder:false
-   and a valid src, swaps the placeholder <div> for a real <video>.
+   If placeholder is false and src is set, replaces the frame
+   div with an autoplaying muted <video> element while keeping
+   the teal border styling of .tech-video-frame.
    ============================================================= */
 function loadVideos() {
   Object.values(VIDEOS).forEach(({ id, src, placeholder, label }) => {
     if (placeholder || !src) return;
 
-    const container = document.querySelector(`[data-video="${id}"]`);
-    if (!container) return;
+    const frame = document.querySelector(`[data-video="${id}"]`);
+    if (!frame) return;
 
-    const video = document.createElement('video');
-    video.className    = 'product-video-player';
-    video.src          = src;
-    video.autoplay     = true;
-    video.muted        = true;
-    video.loop         = true;
-    video.playsInline  = true;
+    const video         = document.createElement('video');
+    video.src           = src;
+    video.autoplay      = true;
+    video.muted         = true;
+    video.loop          = true;
+    video.playsInline   = true;
     video.setAttribute('aria-label', label);
 
-    container.replaceWith(video);
+    // Preserve frame's border and styling by replacing only inner content
+    frame.innerHTML = '';
+    video.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;';
+    frame.appendChild(video);
   });
 }
 
 /* =============================================================
    STICKY NAVBAR
+   Adds a frosted-glass background once the user scrolls past 20px.
    ============================================================= */
 function initNavbar() {
   const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
+  if (!navbar) return;
+
+  function onScroll() {
     navbar.classList.toggle('scrolled', window.scrollY > 20);
-  }, { passive: true });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // run once on load
+}
+
+/* =============================================================
+   ACTIVE NAV LINK (section highlighting)
+   Marks the link whose target section is currently in view.
+   ============================================================= */
+function initActiveNavLink() {
+  const links    = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        links.forEach(l => l.classList.remove('active'));
+        const active = links.find(l => l.getAttribute('href') === `#${entry.target.id}`);
+        if (active) active.classList.add('active');
+      });
+    },
+    { threshold: 0.35, rootMargin: '-72px 0px 0px 0px' }
+  );
+
+  sections.forEach(s => observer.observe(s));
 }
 
 /* =============================================================
@@ -77,55 +94,70 @@ function initNavbar() {
 function initMobileNav() {
   const navToggle = document.getElementById('nav-toggle');
   const navLinks  = document.querySelector('.nav-links');
+  if (!navToggle || !navLinks) return;
 
   navToggle.addEventListener('click', () => {
     const isOpen = navLinks.dataset.open === 'true';
-    navLinks.dataset.open = isOpen ? 'false' : 'true';
-    navToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    const open   = !isOpen;
 
-    Object.assign(navLinks.style, isOpen
-      ? { display: '' }
-      : {
-          display:        'flex',
-          flexDirection:  'column',
-          position:       'absolute',
-          top:            '72px',
-          left:           '0',
-          right:          '0',
-          background:     'rgba(26,28,30,0.97)',
-          backdropFilter: 'blur(20px)',
-          padding:        '16px 24px 24px',
-          borderBottom:   '1px solid rgba(255,255,255,0.08)',
-          gap:            '4px',
-        }
-    );
+    navLinks.dataset.open = String(open);
+    navToggle.setAttribute('aria-expanded', String(open));
+
+    if (open) {
+      Object.assign(navLinks.style, {
+        display:        'flex',
+        flexDirection:  'column',
+        position:       'absolute',
+        top:            '72px',
+        left:           '0',
+        right:          '0',
+        background:     'rgba(245, 245, 245, 0.97)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        padding:        '14px 24px 22px',
+        borderBottom:   '1px solid rgba(0, 0, 0, 0.07)',
+        gap:            '2px',
+        zIndex:         '999',
+      });
+    } else {
+      navLinks.removeAttribute('style');
+    }
   });
 
-  // Close on any nav link click
+  // Close menu when a link is clicked
   document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', () => {
       navLinks.dataset.open = 'false';
-      navLinks.style.display = '';
+      navLinks.removeAttribute('style');
       navToggle.setAttribute('aria-expanded', 'false');
     });
   });
 }
 
 /* =============================================================
-   SCROLL FADE-IN ANIMATION
+   SCROLL FADE-IN
+   Elements with class .fade-up become visible when they enter
+   the viewport.
    ============================================================= */
 function initScrollAnimations() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // animate only once
+        }
+      });
+    },
+    { threshold: 0.10, rootMargin: '0px 0px -36px 0px' }
+  );
 
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 }
 
 /* =============================================================
    CONTACT FORM
+   Simple submit handler with visual confirmation.
    ============================================================= */
 function initContactForm() {
   const form = document.getElementById('contact-form');
@@ -133,10 +165,11 @@ function initContactForm() {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const btn = form.querySelector('[type="submit"]');
+
+    const btn          = form.querySelector('[type="submit"]');
     const originalHTML = btn.innerHTML;
 
-    btn.innerHTML  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Sent!';
+    btn.innerHTML  = '&#10003; Message Sent!';
     btn.style.background = '#0A8A7E';
     btn.disabled   = true;
 
@@ -145,12 +178,12 @@ function initContactForm() {
       btn.style.background = '';
       btn.disabled         = false;
       form.reset();
-    }, 3500);
+    }, 3800);
   });
 }
 
 /* =============================================================
-   SMOOTH SCROLL (Safari polyfill)
+   SMOOTH SCROLL � Safari polyfill
    ============================================================= */
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -170,6 +203,7 @@ function initSmoothScroll() {
 document.addEventListener('DOMContentLoaded', () => {
   loadVideos();
   initNavbar();
+  initActiveNavLink();
   initMobileNav();
   initScrollAnimations();
   initContactForm();
