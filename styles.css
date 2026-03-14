@@ -302,7 +302,7 @@ img, video  { display: block; max-width: 100%; }
   flex-direction:  column;
   justify-content: space-between;
   background:      url('car_bck_3.jpg') center center / cover no-repeat;
-  overflow:        hidden;
+  overflow:        visible;
 }
 
 /* Gradient overlay: faint light at top so dark headline reads, darkens at bottom for glass box contrast */
@@ -350,21 +350,21 @@ img, video  { display: block; max-width: 100%; }
   display: block;
 }
 
-/* ── Lower Area (theory box anchored to bottom-right) ── */
+/* ── Lower Area (theory box aligned to bottom-right via flex) ── */
 .hero-lower {
-  position: absolute;
-  bottom:   64px;
-  right:    48px;
-  z-index:  2;
-  width:    auto;
-  padding:  0;
+  position:        relative;
+  z-index:         2;
+  width:           100%;
+  padding:         0 48px 64px;
+  display:         flex;
+  justify-content: flex-end;
 }
 
 .hero-lower .container {
-  display:      block;
-  max-width:    none;
-  padding:      0;
-  margin:       0;
+  display:   block;
+  max-width: none;
+  padding:   0;
+  margin:    0;
 }
 
 /* ── Theory Floating Box ── */
@@ -468,7 +468,14 @@ img, video  { display: block; max-width: 100%; }
 }
 
 /* ===== PRODUCTS ===== */
-#products { padding: 100px 0; }
+#products {
+  padding:    72px 0 80px;
+  min-height: 100vh;
+  display:    flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
 
 .product-grid {
   display:               grid;
@@ -545,7 +552,7 @@ img, video  { display: block; max-width: 100%; }
 
 /* ===== TECHNOLOGY SECTION ===== */
 #technology {
-  padding:        90px 0 36px;
+  padding:        72px 0 40px;
   min-height:     100vh;
   background:     linear-gradient(160deg, #EEF3FA 0%, #E2EBF5 40%, #D4E4F2 100%);
   display:        flex;
@@ -608,9 +615,9 @@ img, video  { display: block; max-width: 100%; }
 }
 
 .tech-video-wrap .tech-video-frame {
-  min-height:   160px;
+  aspect-ratio: 16 / 5;
+  min-height:   0;
   height:       auto;
-  aspect-ratio: 16 / 4.5;
 }
 
 /* ── Left: stacked cards ── */
@@ -729,8 +736,8 @@ img, video  { display: block; max-width: 100%; }
 .tech-video-frame {
   position:        relative;
   width:           100%;
-  height:          100%;
-  min-height:      480px;
+  height:          auto;
+  min-height:      0;
   border-radius:   var(--r-md);
   background:      #060d1a;
   border:          2px solid #970747;
@@ -800,10 +807,10 @@ img, video  { display: block; max-width: 100%; }
   z-index:        4;
   line-height:    1;
 }
-.vid-coord-tl { top: 32px;    left: 16px; }
-.vid-coord-tr { top: 32px;    right: 16px; text-align: right; }
-.vid-coord-bl { bottom: 32px; left: 16px; }
-.vid-coord-br { bottom: 32px; right: 16px; text-align: right; }
+.vid-coord-tl { top: 28px;    left: 14px; }
+.vid-coord-tr { top: 28px;    right: 14px; text-align: right; }
+.vid-coord-bl { bottom: 28px; left: 14px; }
+.vid-coord-br { bottom: 28px; right: 14px; text-align: right; }
 
 .video-inner {
   display:        flex;
@@ -844,8 +851,13 @@ img, video  { display: block; max-width: 100%; }
 
 /* ===== OUR STORY TIMELINE ===== */
 #our-story {
-  padding:    100px 0;
-  background: linear-gradient(160deg, #EEF3FA 0%, #E2EBF5 40%, #D4E4F2 100%);
+  padding:        72px 0 80px;
+  min-height:     100vh;
+  background:     linear-gradient(160deg, #EEF3FA 0%, #E2EBF5 40%, #D4E4F2 100%);
+  display:        flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing:     border-box;
 }
 
 /* Match Our Story tag to tech eyebrow */
@@ -970,7 +982,14 @@ img, video  { display: block; max-width: 100%; }
 }
 
 /* ===== CONTACT ===== */
-#contact { padding: 100px 0; }
+#contact {
+  padding:        72px 0 80px;
+  min-height:     100vh;
+  display:        flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing:     border-box;
+}
 
 /* Match Get in Touch tag to Product Suite size */
 #contact .section-tag {
@@ -1152,22 +1171,231 @@ footer {
 .footer-links a:hover { color: var(--teal); }
 
 /* ===== RESPONSIVE ===== */
+
+/* ─────────────────────────────────────────────
+   1280px  – large laptops starting to shrink
+───────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  /* PAGE 1: slightly reduce theory box */
+  .hero-theory-box { max-width: 480px; width: 480px; }
+}
+
+/* ─────────────────────────────────────────────
+   1100px  – tablets landscape / small laptops
+───────────────────────────────────────────── */
 @media (max-width: 1100px) {
-  .product-grid  { grid-template-columns: repeat(2, 1fr); }
-  .tech-split    { grid-template-columns: 1fr; gap: 52px; }
+
+  /* PAGE 1 – Hero */
+  .hero-lower {
+    justify-content: center;
+    padding:         0 36px 52px;
+  }
+  .hero-theory-box {
+    width:     100%;
+    max-width: 580px;
+  }
+
+  /* PAGE 2 – Technology: 3 cols → 2 cols */
+  #technology       { padding: 72px 0 32px; }
+  .tech-card-grid   { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .tech-video-wrap .tech-video-frame { aspect-ratio: 16 / 5.5; }
+
+  /* PAGE 3 – Products: 4 cols → 2 cols */
+  .product-grid   { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  #products       { padding: 80px 0; }
+  .section-header { margin-bottom: 48px; }
+
+  /* PAGE 5 – Contact */
+  .contact-grid { gap: 52px; }
 }
 
+/* ─────────────────────────────────────────────
+   900px  – tablets portrait / hamburger nav
+───────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .nav-links    { display: none; }
-  .nav-toggle   { display: flex; align-items: center; justify-content: center; }
-  .contact-grid { grid-template-columns: 1fr; gap: 48px; }
-  .hero-content { grid-template-columns: 1fr; gap: 40px; padding-top: 100px; padding-bottom: 80px; }
+
+  /* Navbar: show hamburger */
+  .nav-links  { display: none; }
+  .nav-toggle { display: flex; align-items: center; justify-content: center; }
+
+  /* Common */
+  .container      { padding: 0 28px; }
+  .section-header { margin-bottom: 40px; }
+  .section-title  { font-size: clamp(1.3rem, 3.5vw, 1.9rem); }
+
+  /* PAGE 1 – Hero */
+  .hero-headline-wrap {
+    padding: 108px 28px 28px;
+  }
+  .hero-title { font-size: clamp(2rem, 5.5vw, 3.8rem); }
+  .hero-lower { padding: 0 28px 44px; }
+  .hero-theory-box {
+    width:     100%;
+    max-width: 100%;
+    padding:   28px 30px 24px;
+  }
+
+  /* PAGE 2 – Technology */
+  #technology     { padding: 68px 0 28px; min-height: auto; display: block; }
+  .tech-card-grid { grid-template-columns: repeat(2, 1fr); }
+  .tech-video-wrap .tech-video-frame { aspect-ratio: 16 / 6; }
+  .tech-eyebrow   { font-size: 0.85rem; letter-spacing: 0.12em; }
+  .tech-main-title { font-size: 1.1rem; }
+
+  /* PAGE 3 – Products */
+  #products { padding: 64px 0 60px; min-height: auto; display: block; }
+
+  /* PAGE 4 – Our Story */
+  #our-story { min-height: auto; display: block; }
+
+  /* PAGE 5 – Contact: 2 cols → 1 col */
+  #contact          { padding: 64px 0 60px; min-height: auto; display: block; }
+  .contact-grid     { grid-template-columns: 1fr; gap: 36px; }
+  .contact-info-title { margin-top: 0; }
+  .contact-heading  { font-size: 1.7rem; margin-bottom: 20px; }
 }
 
+/* ─────────────────────────────────────────────
+   768px  – iPad portrait mid-range
+───────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* PAGE 1 – Hero */
+  .hero-headline-wrap { padding: 100px 24px 24px; }
+  .hero-title         { font-size: clamp(1.9rem, 6vw, 3.2rem); }
+  .hero-lower         { padding: 0 24px 40px; }
+  .hero-theory-box    { padding: 26px 26px 22px; }
+  .hero-intro         { font-size: 0.875rem; }
+
+  /* PAGE 2 – Technology */
+  .tech-card-inner { padding: 22px 20px 18px; }
+
+  /* PAGE 3 – Products: 2 cols → 1 col */
+  .product-grid { grid-template-columns: 1fr; }
+  .product-card { padding: 30px 24px 26px; }
+
+  /* PAGE 5 – Contact */
+  .form-input, .form-textarea { font-size: 0.9rem; }
+}
+
+/* ─────────────────────────────────────────────
+   640px  – phones (large)
+───────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .container     { padding: 0 20px; }
-  .product-grid  { grid-template-columns: 1fr; }
-  .hero-actions  { flex-direction: column; align-items: center; }
-  .footer-inner  { flex-direction: column; align-items: flex-start; }
-  .footer-links  { flex-wrap: wrap; gap: 16px; }
+
+  /* Common */
+  .container      { padding: 0 16px; }
+  .section-header { margin-bottom: 32px; }
+  .section-title  { font-size: 1.25rem; }
+  .section-subtitle { font-size: 0.88rem; }
+
+  /* PAGE 1 – Hero */
+  #hero { background-position: 65% center; }
+  .hero-headline-wrap {
+    padding: 92px 16px 20px;
+  }
+  .hero-title { font-size: clamp(1.7rem, 8vw, 2.6rem); }
+  .hero-lower { padding: 0 16px 32px; }
+  .hero-theory-box {
+    padding:       20px 18px 18px;
+    border-radius: 14px;
+  }
+  .hero-eyebrow       { font-size: 0.65rem; }
+  .hero-theory-title  { font-size: 0.92rem; margin-bottom: 10px; }
+  .hero-intro         { font-size: 0.83rem; line-height: 1.72; margin-bottom: 14px; }
+  .hero-tagline       { font-size: 0.78rem; padding: 9px 13px; margin-bottom: 18px; }
+  .hero-actions       { flex-direction: column; gap: 10px; }
+  .hero-actions .btn  { width: 100%; justify-content: center; padding: 13px 20px; }
+
+  /* PAGE 2 – Technology */
+  #technology         { padding: 62px 0 16px; min-height: auto; display: block; }
+  .tech-header        { margin-bottom: 12px; }
+  .tech-eyebrow       { font-size: 0.75rem; padding: 3px 11px; letter-spacing: 0.10em; }
+  .tech-main-title    { font-size: 0.95rem; }
+  .tech-card-grid     { grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px; }
+  .tech-card-inner    { padding: 12px 13px 10px; }
+  .tech-card-heading  { font-size: 0.78rem; margin-bottom: 5px; letter-spacing: 0.08em; }
+  .tech-card-body     { font-size: 0.80rem; line-height: 1.55; margin-bottom: 7px; }
+  .tech-metric        { padding: 3px 8px; }
+  .tech-video-wrap    { margin-top: 8px; }
+  .tech-video-wrap .tech-video-frame { aspect-ratio: 16 / 7; min-height: 0; max-height: 200px; }
+  .vid-coord          { font-size: 0.48rem; }
+  .video-play-btn     { width: 48px; height: 48px; }
+  .video-caption      { font-size: 0.60rem; }
+
+  /* PAGE 3 – Products */
+  #products       { padding: 68px 0; }
+  .product-grid   { gap: 14px; }
+  .product-card   { padding: 24px 20px 22px; }
+  .product-card-title { font-size: 0.92rem; }
+  .product-card-body  { font-size: 0.84rem; }
+
+  /* PAGE 5 – Contact */
+  #contact          { padding: 68px 0; }
+  .contact-heading  { font-size: 1.4rem; }
+  .contact-grid     { gap: 28px; }
+  .contact-info-body { font-size: 0.84rem; }
+  .form-input, .form-textarea { font-size: 0.85rem; padding: 10px 14px; }
+  .form-textarea    { min-height: 100px; }
+
+  /* Footer */
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .footer-links { flex-wrap: wrap; gap: 12px; }
+  .footer-copy  { font-size: 0.74rem; }
+}
+
+/* ─────────────────────────────────────────────
+   480px  – phones (small, iPhone SE etc.)
+───────────────────────────────────────────── */
+@media (max-width: 480px) {
+
+  /* PAGE 1 – Hero */
+  .hero-headline-wrap { padding: 84px 14px 18px; }
+  .hero-title         { font-size: clamp(1.45rem, 8.5vw, 2rem); }
+  .hero-lower         { padding: 0 14px 26px; }
+  .hero-theory-box    { padding: 18px 15px 16px; border-radius: 12px; }
+  .hero-theory-title  { font-size: 0.86rem; }
+  .hero-intro         { font-size: 0.80rem; }
+  .hero-tagline       { font-size: 0.74rem; padding: 8px 11px; }
+  .btn                { padding: 11px 18px; font-size: 0.76rem; }
+
+  /* PAGE 2 – Technology */
+  #technology         { padding: 56px 0 14px; }
+  .tech-card-inner    { padding: 10px 11px 9px; }
+  .tech-card-heading  { font-size: 0.74rem; letter-spacing: 0.07em; }
+  .tech-card-body     { font-size: 0.76rem; line-height: 1.52; }
+  .tech-metric-label  { font-size: 0.55rem; }
+  .tech-metric-val    { font-size: 0.80rem; }
+  .tech-video-wrap .tech-video-frame { aspect-ratio: 16 / 7; min-height: 0; max-height: 160px; }
+
+  /* PAGE 3 – Products */
+  .product-card       { padding: 20px 16px 18px; }
+  .product-card-icon  { width: 44px; height: 44px; margin-bottom: 16px; }
+  .product-card-title { font-size: 0.86rem; }
+  .product-card-sub   { font-size: 0.72rem; }
+  .product-card-body  { font-size: 0.81rem; }
+
+  /* PAGE 5 – Contact */
+  .contact-heading    { font-size: 1.2rem; }
+  .contact-detail     { padding: 12px; gap: 12px; }
+  .contact-detail-icon { width: 30px; height: 30px; }
+  .contact-detail-value { font-size: 0.82rem; }
+
+  /* Footer */
+  footer { padding: 24px 0 16px; }
+  .section-header { margin-bottom: 28px; }
+}
+
+/* ─────────────────────────────────────────────
+   380px  – very small phones
+───────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .hero-title      { font-size: 1.4rem; }
+  .hero-theory-box { padding: 15px 13px 14px; }
+  .tech-card-body  { font-size: 0.74rem; line-height: 1.5; }
+  .tech-card-inner { padding: 9px 10px 8px; }
+  .tech-video-wrap .tech-video-frame { max-height: 130px; aspect-ratio: 16 / 6; }
+  .product-card    { padding: 18px 14px 16px; }
+  .contact-heading { font-size: 1.1rem; }
+  .btn             { padding: 10px 16px; font-size: 0.73rem; }
 }
