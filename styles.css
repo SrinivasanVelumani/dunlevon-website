@@ -814,6 +814,7 @@ img, video  { display: block; max-width: 100%; }
   align-items:    center;
   gap:            16px;
   z-index:        2;
+  transition:     opacity 0.3s ease;
 }
 
 /* Actual video element inside tech frame */
@@ -909,6 +910,15 @@ img, video  { display: block; max-width: 100%; }
   color:          rgba(0, 209, 193, 0.70);
   text-align:     center;
   max-width:      80%;
+}
+
+/* Hide controls overlay while tech video is playing; click video to reveal */
+.tech-video-frame.is-playing .video-inner {
+  opacity:        0;
+  pointer-events: none;
+}
+.tech-video-frame.is-playing {
+  cursor: pointer;
 }
 
 /* ===== OUR STORY TIMELINE ===== */
@@ -1353,17 +1363,18 @@ footer {
 }
 
 .pvc-glass {
-  position:        absolute;
-  inset:           0;
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             14px;
-  padding:         20px;
-  background:      rgba(10, 15, 30, 0.52);
-  backdrop-filter: blur(2px);
-  transition:      background 0.3s ease;
+  position:                absolute;
+  inset:                   0;
+  display:                 flex;
+  flex-direction:          column;
+  align-items:             center;
+  justify-content:         center;
+  gap:                     14px;
+  padding:                 20px;
+  background:              rgba(10, 15, 30, 0.52);
+  backdrop-filter:         blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition:              background 0.3s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
 }
 .pvc-item[data-pos="0"]:hover .pvc-glass {
   background: rgba(10, 15, 30, 0.36);
@@ -1381,11 +1392,27 @@ footer {
   justify-content: center;
   cursor:          pointer;
   flex-shrink:     0;
-  transition:      background 0.25s ease, transform 0.25s ease;
+  transition:      background 0.25s ease, transform 0.25s ease, opacity 0.3s ease;
 }
 .pvc-item[data-pos="0"] .pvc-play:hover {
   background: rgba(151, 7, 71, 0.80);
   transform:  scale(1.10);
+}
+
+/* While a carousel video is playing: remove dark overlay so video is fully visible.
+   Click the card to pause and reveal controls again. */
+.pvc-item.is-playing .pvc-glass {
+  background:              transparent;
+  backdrop-filter:         none;
+  -webkit-backdrop-filter: none;
+}
+.pvc-item.is-playing .pvc-play,
+.pvc-item.is-playing .pvc-meta {
+  opacity:        0;
+  pointer-events: none;
+}
+.pvc-item.is-playing {
+  cursor: pointer;
 }
 
 .pvc-meta {
@@ -1394,6 +1421,7 @@ footer {
   align-items:    center;
   gap:            4px;
   text-align:     center;
+  transition:     opacity 0.3s ease;
 }
 .pvc-label {
   font-family:    'Montserrat', sans-serif;

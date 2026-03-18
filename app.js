@@ -209,6 +209,7 @@ function initTechVideo() {
   const timeEl   = document.getElementById('tech-timeline-time');
   if (!video || !playBtn) return;
 
+  const frame     = video.closest('.tech-video-frame');
   const PLAY_SVG  = `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
   const PAUSE_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
 
@@ -218,11 +219,23 @@ function initTechVideo() {
   }
 
   playBtn.addEventListener('click', () => {
-    if (video.paused) { video.play().catch(() => {}); playBtn.innerHTML = PAUSE_SVG; }
-    else              { video.pause();                 playBtn.innerHTML = PLAY_SVG;  }
+    if (video.paused) { video.play().catch(() => {}); playBtn.innerHTML = PAUSE_SVG; if (frame) frame.classList.add('is-playing'); }
+    else              { video.pause();                 playBtn.innerHTML = PLAY_SVG;  if (frame) frame.classList.remove('is-playing'); }
   });
 
-  video.addEventListener('ended', () => { playBtn.innerHTML = PLAY_SVG; });
+  // Click anywhere on the video frame (outside the button/timeline) while playing → pause + reveal controls
+  if (frame) {
+    frame.addEventListener('click', (e) => {
+      if (e.target.closest('#tech-play-btn') || e.target.closest('.vid-timeline')) return;
+      if (!video.paused) {
+        video.pause();
+        playBtn.innerHTML = PLAY_SVG;
+        frame.classList.remove('is-playing');
+      }
+    });
+  }
+
+  video.addEventListener('ended', () => { playBtn.innerHTML = PLAY_SVG; if (frame) frame.classList.remove('is-playing'); });
 
   video.addEventListener('timeupdate', () => {
     if (!video.duration) return;
@@ -264,6 +277,7 @@ function initProductVideoCarousel() {
   function syncPlayBtn(item, isPaused) {
     const btn = item.querySelector('.pvc-play');
     if (btn) btn.innerHTML = isPaused ? PLAY_ICON : PAUSE_ICON;
+    item.classList.toggle('is-playing', !isPaused);
   }
 
   function setPositions() {
