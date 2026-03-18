@@ -276,7 +276,13 @@ function initProductVideoCarousel() {
 
   function syncPlayBtn(item, isPaused) {
     const btn = item.querySelector('.pvc-play');
-    if (btn) btn.innerHTML = isPaused ? PLAY_ICON : PAUSE_ICON;
+    if (btn) {
+      btn.innerHTML = isPaused ? PLAY_ICON : PAUSE_ICON;
+      // Force hide/show via inline style — overrides all CSS rules,
+      // fixing iOS Safari where opacity:0 can be ignored by sticky hover.
+      btn.style.opacity       = isPaused ? '' : '0';
+      btn.style.pointerEvents = isPaused ? '' : 'none';
+    }
     item.classList.toggle('is-playing', !isPaused);
   }
 
